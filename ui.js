@@ -12,21 +12,30 @@ const UI = {
      * Set up event listeners for form inputs
      */
     setupEventListeners() {
-        // District size selection
+        // District size selection (remains radio buttons)
         document.querySelectorAll('input[name="districtSize"]').forEach(input => {
             input.addEventListener('change', (e) => {
                 Game.updateDistrictSize(e.target.value);
             });
         });
 
-        // Assessment questions
+        // Assessment questions (now checkboxes)
         ['mfa', 'backup', 'edr', 'training', 'incident'].forEach(category => {
             document.querySelectorAll(`input[name="${category}"]`).forEach(input => {
                 input.addEventListener('change', (e) => {
-                    Game.updateAssessment(category, parseInt(e.target.value));
+                    this.updateAssessmentCheckboxes(category);
                 });
             });
         });
+    },
+
+    /**
+     * Update assessment based on checkbox selections
+     */
+    updateAssessmentCheckboxes(category) {
+        const checkboxes = document.querySelectorAll(`input[name="${category}"]:checked`);
+        const selectedValues = Array.from(checkboxes).map(cb => cb.value);
+        Game.updateAssessment(category, selectedValues);
     },
 
     /**
@@ -76,7 +85,11 @@ const UI = {
         };
 
         if (elements.budget) {
-            elements.budget.textContent = `$${gameState.budget.toLocaleString()}`;
+            if (gameState.budget !== null) {
+                elements.budget.textContent = `${gameState.budget.toLocaleString()}`;
+            } else {
+                elements.budget.textContent = 'Select District';
+            }
         }
         if (elements.schoolDaysLost) {
             elements.schoolDaysLost.textContent = gameState.schoolDaysLost;
@@ -405,6 +418,9 @@ const UI = {
      */
     resetForm() {
         document.querySelectorAll('input[type="radio"]').forEach(input => {
+            input.checked = false;
+        });
+        document.querySelectorAll('input[type="checkbox"]').forEach(input => {
             input.checked = false;
         });
     },
