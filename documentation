@@ -1,0 +1,392 @@
+# CyberGuard Academy - Complete Framework Documentation
+
+## High-Level Gameplay Structure
+
+### Phase 1: Risk Assessment (NIST "Identify")
+**Duration**: 5-10 minutes
+**Objective**: Establish baseline security posture
+
+```
+START → Risk Assessment Questionnaire → Security Level Calculation → Scenario Generation
+```
+
+**Assessment Categories:**
+1. **Multi-Factor Authentication (MFA)**
+   - None (0 points) → High vulnerability to credential theft
+   - Admin only (1 point) → Moderate risk from staff accounts
+   - All users (2 points) → Strong credential protection
+
+2. **Backup Strategy**
+   - No backups (0 points) → Complete data loss risk
+   - Network backups (1 point) → Ransomware vulnerability
+   - Air-gapped (2 points) → Rapid recovery capability
+
+3. **Endpoint Detection & Response (EDR)**
+   - Basic antivirus (0 points) → Limited threat detection
+   - Advanced AV (1 point) → Some behavioral analysis
+   - Full EDR (2 points) → Comprehensive monitoring
+
+4. **Staff Training**
+   - None (0 points) → High human error risk
+   - Annual training (1 point) → Basic awareness
+   - Regular + simulations (2 points) → Strong security culture
+
+5. **Incident Response Plan**
+   - No plan (0 points) → Chaotic response
+   - Written plan (1 point) → Structured but untested
+   - Tested plan (2 points) → Proven effectiveness
+
+### Phase 2: Incident Simulation (NIST "Protect", "Detect", "Respond")
+**Duration**: 15-25 minutes
+**Objective**: Navigate realistic cyber incidents
+
+```
+Scenario 1 → Decision → Consequences → Cost Calculation → Next Scenario
+```
+
+### Phase 3: Recovery & Results (NIST "Recover")
+**Duration**: 5 minutes
+**Objective**: Assess performance and provide learning outcomes
+
+---
+
+## Detailed Scenario Trees
+
+### Scenario 1: Phishing Campaign
+**NIST Category**: Detect
+**Trigger Conditions**: Any security level (scaled difficulty)
+
+#### Initial Situation:
+- 3 staff clicked malicious links
+- Potential credential compromise
+- Email campaign ongoing
+
+#### Decision Tree:
+```
+PHISHING ATTACK DETECTED
+├── Immediate Response (GOOD)
+│   ├── Cost: $2,000 (password resets, account monitoring)
+│   ├── Time: 4 hours
+│   └── Outcome: Contained → Scenario 1B
+├── Warning Email Only (MODERATE)
+│   ├── Cost: $0
+│   ├── Time: 2 hours
+│   └── Outcome: Spreading → Scenario 1C
+└── Wait and Monitor (POOR)
+    ├── Cost: $0
+    ├── Time: 0 hours
+    └── Outcome: Escalated → Scenario 1D
+```
+
+#### Follow-up Scenarios:
+
+**1B - Contained Response:**
+- Situation: Quick action prevented spread
+- New Decision: Invest in email security solution?
+  - Yes: $15,000 cost, prevents future phishing
+  - No: $0 cost, vulnerability remains
+
+**1C - Spreading Campaign:**
+- Situation: 15 more staff affected
+- New Decision: Emergency response needed
+  - Hire external consultant: $25,000, 8 hours
+  - Handle internally: $5,000, 24 hours
+
+**1D - Escalated Breach:**
+- Situation: Administrative accounts compromised
+- New Decision: Full investigation required
+  - Comprehensive forensics: $75,000, 48 hours
+  - Minimal investigation: $25,000, 16 hours
+
+### Scenario 2: Ransomware Detection
+**NIST Category**: Respond
+**Trigger Conditions**: Weak/Moderate security levels
+
+#### Initial Situation:
+- Files encrypting rapidly
+- Unknown ransomware variant
+- Critical systems at risk
+
+#### Decision Tree:
+```
+RANSOMWARE ACTIVE
+├── Immediate Isolation (GOOD)
+│   ├── Cost: $5,000 (isolation procedures)
+│   ├── Time: 8 hours
+│   └── Outcome: Contained → Scenario 2B
+├── Network Shutdown (OVERREACTION)
+│   ├── Cost: $0
+│   ├── Time: 24 hours (unnecessary downtime)
+│   └── Outcome: Overreaction → Scenario 2C
+└── Investigate First (POOR)
+    ├── Cost: $0
+    ├── Time: 2 hours
+    └── Outcome: Delayed → Scenario 2D
+```
+
+#### Follow-up Scenarios:
+
+**2B - Contained Incident:**
+- Situation: Ransomware stopped, 50 files encrypted
+- New Decision: Recovery approach
+  - Restore from backups: $10,000, 12 hours
+  - Attempt decryption: $30,000, 36 hours
+  - Pay ransom: $50,000, 6 hours (ethical implications)
+
+**2C - Network Shutdown:**
+- Situation: Unnecessary full shutdown
+- New Decision: Restart procedures
+  - Systematic restart: $15,000, 16 hours
+  - Rapid restart: $5,000, 8 hours (higher risk)
+
+**2D - Delayed Response:**
+- Situation: Ransomware spread to backup systems
+- New Decision: Full recovery needed
+  - Complete system rebuild: $100,000, 72 hours
+  - Partial recovery: $50,000, 48 hours
+
+### Scenario 3: Social Engineering
+**NIST Category**: Protect
+**Trigger Conditions**: All security levels
+
+#### Initial Situation:
+- Caller claims to be IT vendor
+- Requests administrative access
+- Seems to know internal details
+
+#### Decision Tree:
+```
+SOCIAL ENGINEERING CALL
+├── Verify Identity (EXCELLENT)
+│   ├── Cost: $0
+│   ├── Time: 1 hour
+│   └── Outcome: Verified → Scenario 3B
+├── Provide Access (CATASTROPHIC)
+│   ├── Cost: $0
+│   ├── Time: 0 hours
+│   └── Outcome: Compromised → Scenario 3C
+└── Hang Up & Report (GOOD)
+    ├── Cost: $500
+    ├── Time: 2 hours
+    └── Outcome: Reported → Scenario 3D
+```
+
+---
+
+## Cost Framework
+
+### Proactive Investment Costs
+| Solution | Cost | Annual Savings | Risk Reduction |
+|----------|------|----------------|----------------|
+| EDR Solution | $25,000 | $40,000 | 60% incident detection |
+| Backup System | $15,000 | $75,000 | 90% ransomware recovery |
+| MFA Implementation | $8,000 | $50,000 | 80% credential attacks |
+| Staff Training Program | $5,000 | $30,000 | 70% human error |
+| Incident Response Plan | $10,000 | $25,000 | 50% response time |
+| Network Monitoring | $20,000 | $60,000 | 70% threat detection |
+| Email Security Gateway | $15,000 | $45,000 | 85% phishing prevention |
+
+### Reactive Incident Costs
+| Response Type | Cost Range | Time Impact | Scenario Triggers |
+|---------------|------------|-------------|-------------------|
+| Password Reset Campaign | $2,000-$5,000 | 4-8 hours | Phishing compromise |
+| Forensic Investigation | $25,000-$75,000 | 24-72 hours | Data breach |
+| Incident Response Consultant | $50,000-$100,000 | 48-120 hours | Major incidents |
+| System Restoration | $10,000-$50,000 | 12-48 hours | Ransomware recovery |
+| Legal Compliance | $25,000-$100,000 | 40-80 hours | Data breach notification |
+| Regulatory Fines | $50,000-$500,000 | N/A | FERPA/COPPA violations |
+| Credit Monitoring | $15,000-$30,000 | 8-16 hours | Student data exposure |
+
+### Time-Based Costs
+| Impact Type | Cost per Hour | Multiplier by District Size |
+|-------------|---------------|---------------------------|
+| Instructional Time Lost | $500 | Small: 1x, Medium: 2x, Large: 3x |
+| Administrative Downtime | $200 | Small: 1x, Medium: 1.5x, Large: 2x |
+| Communication Systems | $100 | Small: 1x, Medium: 1.5x, Large: 2.5x |
+
+---
+
+## Balancing Realism and Usability
+
+### For K-12 Staff Audience:
+
+#### **Simplified Technical Language**
+- Replace "endpoint detection" with "computer monitoring"
+- Use "backup copies" instead of "data redundancy"
+- Explain acronyms on first use
+
+#### **Relatable Scenarios**
+- Focus on school-specific situations (grade books, student records)
+- Include familiar characters (principals, teachers, IT staff)
+- Reference actual school processes (enrollment, testing, communications)
+
+#### **Visual Feedback**
+- Color-coded decisions (green = good, yellow = caution, red = risky)
+- Progress bars for incident resolution
+- Dashboard showing real-time impact
+
+#### **Educational Integration**
+- Link decisions to NIST framework categories
+- Provide "Why this matters" explanations
+- Include post-scenario learning summaries
+
+### **Difficulty Scaling**
+```
+Beginner Mode:
+- 3 scenarios maximum
+- Clear right/wrong answers
+- Lower cost impacts
+- Detailed explanations
+
+Intermediate Mode:
+- 5 scenarios
+- Some ambiguous situations
+- Realistic cost impacts
+- Moderate explanations
+
+Advanced Mode:
+- 7+ scenarios
+- Complex decision trees
+- Full cost consequences
+- Minimal guidance
+```
+
+---
+
+## Scoring and Feedback System
+
+### Performance Metrics
+1. **Financial Impact Score** (0-100)
+   - 100: Under $25,000 total cost
+   - 75: $25,000-$50,000
+   - 50: $50,000-$100,000
+   - 25: $100,000-$200,000
+   - 0: Over $200,000
+
+2. **Response Time Score** (0-100)
+   - 100: Under 20 hours total downtime
+   - 75: 20-40 hours
+   - 50: 40-80 hours
+   - 25: 80-120 hours
+   - 0: Over 120 hours
+
+3. **Decision Quality Score** (0-100)
+   - Based on NIST framework alignment
+   - Weighted by scenario complexity
+   - Bonus for proactive investments
+
+### Badge System
+| Badge | Criteria | Description |
+|-------|----------|-------------|
+| **Cyber Guardian** | 90+ overall score | Exceptional incident response |
+| **Rapid Responder** | <20 hours total downtime | Quick decisive action |
+| **Budget Protector** | <$50,000 total cost | Efficient resource management |
+| **NIST Navigator** | Perfect framework alignment | Follows best practices |
+| **Proactive Planner** | 3+ proactive investments | Preventative mindset |
+
+### Detailed Feedback Report
+```
+INCIDENT RESPONSE SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+OVERALL PERFORMANCE: 78/100 (Good Response)
+
+Financial Impact: $67,500
+Instructional Time Lost: 28 hours
+Security Level Improvement: Moderate → Strong
+
+SCENARIO BREAKDOWN:
+├── Phishing Campaign: Contained (Good response)
+│   └── Cost: $17,500 | Time: 12 hours
+├── Ransomware Incident: Delayed response (Needs improvement)
+│   └── Cost: $45,000 | Time: 14 hours
+└── Social Engineering: Verified caller (Excellent)
+    └── Cost: $5,000 | Time: 2 hours
+
+NIST FRAMEWORK ALIGNMENT:
+├── Identify: Strong (Risk assessment completed)
+├── Protect: Moderate (Some preventative measures)
+├── Detect: Good (Threats identified quickly)
+├── Respond: Moderate (Mixed response quality)
+└── Recover: Good (Effective recovery procedures)
+
+RECOMMENDATIONS:
+1. Invest in automated threat detection ($25,000)
+2. Conduct regular incident response drills
+3. Implement comprehensive staff training program
+4. Establish vendor verification procedures
+
+EARNED BADGES:
+🛡️ Rapid Responder - Quick decisive action
+📊 Budget Protector - Efficient resource management
+```
+
+---
+
+## Technical Implementation Notes
+
+### Data Storage (In-Memory Only)
+```javascript
+// Game state structure
+gameState = {
+    budget: 150000,
+    hoursLost: 0,
+    securityLevel: 'Baseline',
+    assessment: {...},
+    currentScenario: 0,
+    scenarios: [...],
+    totalCost: 0,
+    decisions: [...],
+    proactiveInvestments: [...],
+    badges: [...],
+    startTime: Date.now()
+}
+```
+
+### Scenario Generation Logic
+```javascript
+function generateScenarios(securityLevel, assessment) {
+    let scenarios = [];
+    
+    // Always include core scenarios
+    scenarios.push(...coreScenarios);
+    
+    // Add conditional scenarios based on weaknesses
+    if (assessment.mfa < 2) scenarios.push(credentialTheftScenario);
+    if (assessment.backup < 2) scenarios.push(ransomwareScenario);
+    if (assessment.training < 1) scenarios.push(socialEngScenario);
+    
+    // Adjust difficulty
+    scenarios.forEach(scenario => {
+        scenario.decisions.forEach(decision => {
+            if (securityLevel === 'Weak') {
+                decision.cost *= 1.5;
+                decision.hours *= 1.3;
+            } else if (securityLevel === 'Strong') {
+                decision.cost *= 0.8;
+                decision.hours *= 0.9;
+            }
+        });
+    });
+    
+    return shuffleArray(scenarios).slice(0, 5);
+}
+```
+
+### Real-World Integration Opportunities
+1. **District-Specific Customization**
+   - Upload actual budget data
+   - Include real vendor costs
+   - Reference specific policies
+
+2. **Progress Tracking**
+   - Export results to PDF
+   - Integration with LMS systems
+   - Compliance reporting
+
+3. **Multiplayer Options**
+   - Team-based decisions
+   - Cross-district competitions
+   - Collaborative incident response
+
+This framework provides a comprehensive foundation for realistic, educational cybersecurity training while maintaining engagement and accessibility for K-12 staff.
