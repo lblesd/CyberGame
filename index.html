@@ -1,0 +1,1513 @@
+function makeDecision(decisionIndex) {
+            const currentScenario = gameState.scenarios[gameState.currentScenario];
+            const decision = currentScenario.decisions[decisionIndex];
+            
+            // Apply costs
+            gameState.budget -= decision.cost;
+            gameState.hoursLost += decision.hours;
+            gameState.totalCost += decision.cost;
+            
+            // Update NIST alignment
+            if (decision.nistAlignment && decision.nistAlignment !== 'None') {
+                gameState.nistAlignment[decision.nistAlignment.toLowerCase()]++;
+            }
+            
+            // Record decision
+            gameState.decisions.push({
+                scenario: currentScenario.title,
+                decision: decision.text,
+                cost: decision.cost,
+                hours: decision.hours,
+                outcome: decision.outcome,
+                nistAlignment: decision.nistAlignment || 'None'
+            });
+            
+            // Check for follow-up scenarios
+            if (decision.followUp && followUpScenarios[decision.followUp]) {
+                gameState.followUpQueue.push(decision.followUp);
+            }
+            
+            // Show cost breakdown
+            showCostBreakdown(decision);
+            
+            // Check for badges
+            checkBadges();
+            
+            // Move to next scenario or end game
+            setTimeout(() => {
+                gameState.currentScenario++;
+                if (gameState.currentScenario < gameState.scenarios.length) {
+                    showScenario(gameState.scenarios[gameState.currentScenario]);
+                } else if (gameState.followUpQueue.length > 0) {
+                    showFollowUpScenario();
+                } else {
+                    endSimulation();
+                }
+            }, 3000);
+            
+            updateDashboard();
+        }
+
+        function showFollowUpScenario() {
+            const followUpId = gameState.followUpQueue.shift();
+            const followUpScenario = followUpScenarios[follow<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard Academy - K-12 Cybersecurity Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .phase-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .phase-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: #f0f0f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .phase-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .phase-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .content-area {
+            min-height: 400px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+        }
+
+        .option input[type="radio"] {
+            margin: 0;
+        }
+
+        .scenario-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e74c3c;
+        }
+
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .alert-icon {
+            width: 40px;
+            height: 40px;
+            background: #e74c3c;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .scenario-title {
+            color: #e74c3c;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .scenario-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .decision-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .decision-btn {
+            padding: 15px 20px;
+            border: 2px solid #3498db;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .decision-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .decision-btn.risky {
+            border-color: #e74c3c;
+        }
+
+        .decision-btn.risky:hover {
+            background: #e74c3c;
+        }
+
+        .decision-btn.safe {
+            border-color: #27ae60;
+        }
+
+        .decision-btn.safe:hover {
+            background: #27ae60;
+        }
+
+        .cost-breakdown {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .cost-breakdown h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #f1c40f;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            transition: width 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .results-summary {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .results-summary h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #27ae60;
+            color: white;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .badge-notification {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .scenario-card {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-icon {
+            animation: pulse 2s infinite;
+        }
+
+        .decision-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decision-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .decision-btn:hover::before {
+            left: 100%;
+        }
+
+        .cost-breakdown {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .results-breakdown {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .nist-framework-display {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .nist-category {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .nist-category:last-child {
+            border-bottom: none;
+        }
+
+        .nist-score {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nist-bar {
+            width: 100px;
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .nist-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.8s ease-out;
+        }
+
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        .scenario-timer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid #e74c3c;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.1em;
+        }
+
+        .severity-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .severity-low { background: #27ae60; }
+        .severity-medium { background: #f39c12; }
+        .severity-high { background: #e74c3c; }
+        .severity-critical { background: #8e44ad; }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .phase-selector {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-breakdown > div {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CyberGuard Academy</h1>
+            <p>K-12 Cybersecurity Incident Response Simulation</p>
+        </div>
+
+        <div class="game-container">
+            <div class="dashboard">
+                <div class="stat-card">
+                    <h3>Available Budget</h3>
+                    <div class="stat-value" id="budget">$150,000</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Instructional Hours Lost</h3>
+                    <div class="stat-value" id="hoursLost">0</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Security Level</h3>
+                    <div class="stat-value" id="securityLevel">Baseline</div>
+                </div>
+            </div>
+
+            <div class="phase-selector">
+                <button class="phase-btn active" onclick="showPhase('assessment')">Risk Assessment</button>
+                <button class="phase-btn" onclick="showPhase('simulation')">Incident Simulation</button>
+                <button class="phase-btn" onclick="showPhase('results')">Results</button>
+            </div>
+
+            <div class="content-area" id="contentArea">
+                <!-- Assessment Phase -->
+                <div id="assessmentPhase">
+                    <h2>District Cybersecurity Risk Assessment</h2>
+                    <p style="margin-bottom: 20px; color: #666;">Answer the following questions to establish your district's baseline cybersecurity posture. Your responses will determine your initial vulnerability and influence the scenarios you'll face.</p>
+                    
+                    <div class="question-card">
+                        <h3>1. Multi-Factor Authentication (MFA)</h3>
+                        <div class="option-group">
+                            <label class="option">
+                                <input type="radio" name="mfa" value="0" onclick="updateAssessment('mfa', 0)">
+                                <span>No MFA implementation</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="mfa" value="1" onclick="updateAssessment('mfa', 1)">
+                                <span>MFA for administrators only</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="mfa" value="2" onclick="updateAssessment('mfa', 2)">
+                                <span>MFA for all staff and students</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card">
+                        <h3>2. Data Backup Strategy</h3>
+                        <div class="option-group">
+                            <label class="option">
+                                <input type="radio" name="backup" value="0" onclick="updateAssessment('backup', 0)">
+                                <span>No regular backups</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="backup" value="1" onclick="updateAssessment('backup', 1)">
+                                <span>Regular backups but connected to network</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="backup" value="2" onclick="updateAssessment('backup', 2)">
+                                <span>Air-gapped backups tested regularly</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card">
+                        <h3>3. Endpoint Detection and Response (EDR)</h3>
+                        <div class="option-group">
+                            <label class="option">
+                                <input type="radio" name="edr" value="0" onclick="updateAssessment('edr', 0)">
+                                <span>Basic antivirus only</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="edr" value="1" onclick="updateAssessment('edr', 1)">
+                                <span>Advanced antivirus with some monitoring</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="edr" value="2" onclick="updateAssessment('edr', 2)">
+                                <span>Full EDR solution with 24/7 monitoring</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card">
+                        <h3>4. Staff Security Training</h3>
+                        <div class="option-group">
+                            <label class="option">
+                                <input type="radio" name="training" value="0" onclick="updateAssessment('training', 0)">
+                                <span>No formal security training</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="training" value="1" onclick="updateAssessment('training', 1)">
+                                <span>Annual security awareness training</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="training" value="2" onclick="updateAssessment('training', 2)">
+                                <span>Regular training with simulated phishing tests</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="question-card">
+                        <h3>5. Incident Response Plan</h3>
+                        <div class="option-group">
+                            <label class="option">
+                                <input type="radio" name="incident" value="0" onclick="updateAssessment('incident', 0)">
+                                <span>No formal incident response plan</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="incident" value="1" onclick="updateAssessment('incident', 1)">
+                                <span>Written plan but not tested</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="incident" value="2" onclick="updateAssessment('incident', 2)">
+                                <span>Tested plan with defined roles and procedures</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" onclick="completeAssessment()">Complete Assessment</button>
+                </div>
+
+                <!-- Simulation Phase -->
+                <div id="simulationPhase" class="hidden">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    
+                    <div id="currentScenario">
+                        <!-- Scenarios will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Results Phase -->
+                <div id="resultsPhase" class="hidden">
+                    <div class="results-summary">
+                        <h2>Simulation Complete</h2>
+                        <div class="results-grid">
+                            <div class="result-card">
+                                <h3>Total Cost Impact</h3>
+                                <div class="result-value" id="finalCost">$0</div>
+                            </div>
+                            <div class="result-card">
+                                <h3>Instructional Time Lost</h3>
+                                <div class="result-value" id="finalHours">0 hours</div>
+                            </div>
+                        </div>
+                        <div id="performanceRating"></div>
+                        <button class="btn-primary" onclick="restartGame()">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            budget: 150000,
+            hoursLost: 0,
+            securityLevel: 'Baseline',
+            assessment: {
+                mfa: null,
+                backup: null,
+                edr: null,
+                training: null,
+                incident: null
+            },
+            currentScenario: 0,
+            scenarios: [],
+            totalCost: 0,
+            decisions: [],
+            nistAlignment: {
+                identify: 0,
+                protect: 0,
+                detect: 0,
+                respond: 0,
+                recover: 0
+            },
+            badges: [],
+            proactiveInvestments: [],
+            followUpQueue: []
+        };
+
+        // Cost database (approximate real-world costs)
+        const costs = {
+            // Proactive solutions
+            edr_solution: 25000,
+            backup_system: 15000,
+            mfa_implementation: 8000,
+            staff_training: 5000,
+            incident_response_plan: 10000,
+            network_monitoring: 20000,
+            firewall_upgrade: 12000,
+            
+            // Reactive costs
+            incident_response_consultant: 50000,
+            data_breach_investigation: 75000,
+            system_restoration: 30000,
+            legal_compliance: 25000,
+            notification_costs: 5000,
+            credit_monitoring: 15000,
+            regulatory_fines: 100000,
+            
+            // Time costs (per hour of downtime)
+            instructional_hour_cost: 500
+        };
+
+        // Scenario definitions with follow-up scenarios
+        const scenarioTemplates = [
+            {
+                id: 'phishing_attack',
+                title: 'Suspicious Email Campaign',
+                description: 'Multiple staff members have received convincing phishing emails appearing to be from the district office, requesting login credentials for an "urgent system update." Three teachers have already clicked the links.',
+                icon: '⚠️',
+                nistCategory: 'Detect',
+                decisions: [
+                    {
+                        text: 'Immediately disable affected accounts and reset all passwords',
+                        cost: 2000,
+                        hours: 4,
+                        outcome: 'contained',
+                        followUp: 'phishing_contained',
+                        nistAlignment: 'Respond'
+                    },
+                    {
+                        text: 'Send out a warning email to all staff',
+                        cost: 0,
+                        hours: 2,
+                        outcome: 'spreading',
+                        followUp: 'phishing_spreading',
+                        nistAlignment: 'Protect'
+                    },
+                    {
+                        text: 'Wait and monitor the situation',
+                        cost: 0,
+                        hours: 0,
+                        outcome: 'escalated',
+                        followUp: 'phishing_escalated',
+                        nistAlignment: 'None'
+                    }
+                ]
+            },
+            {
+                id: 'ransomware_detection',
+                title: 'Ransomware Detected',
+                description: 'Your endpoint detection system has flagged suspicious file encryption activity on multiple computers in the main office. Files are being rapidly encrypted with an unknown extension.',
+                icon: '🚨',
+                nistCategory: 'Respond',
+                decisions: [
+                    {
+                        text: 'Immediately isolate affected systems and activate incident response plan',
+                        cost: 5000,
+                        hours: 8,
+                        outcome: 'contained',
+                        followUp: 'ransomware_contained',
+                        nistAlignment: 'Respond'
+                    },
+                    {
+                        text: 'Shut down the entire network to prevent spread',
+                        cost: 0,
+                        hours: 24,
+                        outcome: 'overreaction',
+                        followUp: 'network_shutdown',
+                        nistAlignment: 'Respond'
+                    },
+                    {
+                        text: 'Try to identify the source before taking action',
+                        cost: 0,
+                        hours: 2,
+                        outcome: 'delayed',
+                        followUp: 'ransomware_delayed',
+                        nistAlignment: 'Detect'
+                    }
+                ]
+            },
+            {
+                id: 'social_engineering',
+                title: 'Social Engineering Attempt',
+                description: 'A person claiming to be from your IT vendor calls the main office requesting administrative access to "fix a critical security vulnerability." They seem to know details about your systems.',
+                icon: '📞',
+                nistCategory: 'Protect',
+                decisions: [
+                    {
+                        text: 'Verify the caller\'s identity through official channels before providing any information',
+                        cost: 0,
+                        hours: 1,
+                        outcome: 'verified',
+                        followUp: 'social_eng_verified',
+                        nistAlignment: 'Protect'
+                    },
+                    {
+                        text: 'Provide the requested access since they seem legitimate',
+                        cost: 0,
+                        hours: 0,
+                        outcome: 'compromised',
+                        followUp: 'social_eng_compromised',
+                        nistAlignment: 'None'
+                    },
+                    {
+                        text: 'Hang up immediately and report to IT security',
+                        cost: 500,
+                        hours: 2,
+                        outcome: 'reported',
+                        followUp: 'social_eng_reported',
+                        nistAlignment: 'Protect'
+                    }
+                ]
+            },
+            {
+                id: 'student_hacking',
+                title: 'Student Network Intrusion',
+                description: 'A student has gained unauthorized access to the gradebook system and changed several grades. They also appear to have accessed other student records.',
+                icon: '🎓',
+                nistCategory: 'Detect',
+                decisions: [
+                    {
+                        text: 'Immediately revoke student access and conduct full investigation',
+                        cost: 15000,
+                        hours: 16,
+                        outcome: 'thorough',
+                        followUp: 'student_investigation',
+                        nistAlignment: 'Respond'
+                    },
+                    {
+                        text: 'Reset the grades and give student a warning',
+                        cost: 1000,
+                        hours: 4,
+                        outcome: 'minimal',
+                        followUp: 'student_warning',
+                        nistAlignment: 'Recover'
+                    },
+                    {
+                        text: 'Implement additional access controls and monitoring',
+                        cost: 8000,
+                        hours: 12,
+                        outcome: 'preventative',
+                        followUp: 'student_prevention',
+                        nistAlignment: 'Protect'
+                    }
+                ]
+            },
+            {
+                id: 'vendor_compromise',
+                title: 'Third-Party Vendor Breach',
+                description: 'Your learning management system vendor has notified you of a data breach affecting student information. Personal data may have been exposed.',
+                icon: '🏢',
+                nistCategory: 'Respond',
+                decisions: [
+                    {
+                        text: 'Immediately notify all affected families and authorities',
+                        cost: 25000,
+                        hours: 32,
+                        outcome: 'transparent',
+                        followUp: 'vendor_notification',
+                        nistAlignment: 'Respond'
+                    },
+                    {
+                        text: 'Wait for more information from the vendor',
+                        cost: 0,
+                        hours: 8,
+                        outcome: 'delayed',
+                        followUp: 'vendor_delay',
+                        nistAlignment: 'None'
+                    },
+                    {
+                        text: 'Conduct your own investigation of the impact',
+                        cost: 35000,
+                        hours: 48,
+                        outcome: 'independent',
+                        followUp: 'vendor_investigation',
+                        nistAlignment: 'Respond'
+                    }
+                ]
+            }
+        ];
+
+        // Follow-up scenarios
+        const followUpScenarios = {
+            'phishing_contained': {
+                title: 'Phishing Follow-up: Prevention Investment',
+                description: 'You\'ve successfully contained the phishing attack. Now you need to decide on preventative measures to avoid future incidents.',
+                icon: '🛡️',
+                decisions: [
+                    {
+                        text: 'Invest in advanced email security gateway ($15,000)',
+                        cost: 15000,
+                        hours: 8,
+                        outcome: 'protected',
+                        benefit: 'Prevents 85% of future phishing attempts'
+                    },
+                    {
+                        text: 'Implement mandatory phishing simulation training ($5,000)',
+                        cost: 5000,
+                        hours: 16,
+                        outcome: 'trained',
+                        benefit: 'Reduces staff susceptibility by 70%'
+                    },
+                    {
+                        text: 'Continue with current security measures',
+                        cost: 0,
+                        hours: 0,
+                        outcome: 'vulnerable',
+                        benefit: 'No additional protection'
+                    }
+                ]
+            },
+            'ransomware_contained': {
+                title: 'Ransomware Recovery',
+                description: 'The ransomware has been isolated, but 200 files were encrypted. You need to decide on recovery strategy.',
+                icon: '💾',
+                decisions: [
+                    {
+                        text: 'Restore from air-gapped backups ($10,000)',
+                        cost: 10000,
+                        hours: 12,
+                        outcome: 'restored',
+                        benefit: 'Full data recovery'
+                    },
+                    {
+                        text: 'Attempt file decryption tools ($5,000)',
+                        cost: 5000,
+                        hours: 24,
+                        outcome: 'partial',
+                        benefit: '60% chance of recovery'
+                    },
+                    {
+                        text: 'Recreate lost data manually',
+                        cost: 0,
+                        hours: 80,
+                        outcome: 'manual',
+                        benefit: 'Some data permanently lost'
+                    }
+                ]
+            },
+            'social_eng_compromised': {
+                title: 'Administrative Access Compromised',
+                description: 'The social engineer gained administrative access and has been active in your systems for 2 hours before detection.',
+                icon: '🔓',
+                decisions: [
+                    {
+                        text: 'Full forensic investigation and system rebuild ($100,000)',
+                        cost: 100000,
+                        hours: 120,
+                        outcome: 'secure',
+                        benefit: 'Complete security restoration'
+                    },
+                    {
+                        text: 'Reset all administrative passwords and audit logs ($25,000)',
+                        cost: 25000,
+                        hours: 48,
+                        outcome: 'patched',
+                        benefit: 'Addresses known compromise'
+                    },
+                    {
+                        text: 'Monitor systems for suspicious activity ($5,000)',
+                        cost: 5000,
+                        hours: 16,
+                        outcome: 'monitoring',
+                        benefit: 'Unknown threats may remain'
+                    }
+                ]
+            }
+        };
+
+        // Initialize game
+        function initializeGame() {
+            updateDashboard();
+            showPhase('assessment');
+        }
+
+        function updateDashboard() {
+            document.getElementById('budget').textContent = `$${gameState.budget.toLocaleString()}`;
+            document.getElementById('hoursLost').textContent = gameState.hoursLost;
+            document.getElementById('securityLevel').textContent = gameState.securityLevel;
+        }
+
+        function showPhase(phase) {
+            // Update phase buttons
+            document.querySelectorAll('.phase-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Hide all phases
+            document.querySelectorAll('#assessmentPhase, #simulationPhase, #resultsPhase').forEach(el => el.classList.add('hidden'));
+
+            // Show selected phase
+            document.getElementById(phase + 'Phase').classList.remove('hidden');
+        }
+
+        function updateAssessment(category, value) {
+            gameState.assessment[category] = value;
+        }
+
+        function completeAssessment() {
+            // Calculate security level based on assessment
+            const scores = Object.values(gameState.assessment).filter(val => val !== null);
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+            
+            if (avgScore >= 1.5) {
+                gameState.securityLevel = 'Strong';
+            } else if (avgScore >= 1) {
+                gameState.securityLevel = 'Moderate';
+            } else {
+                gameState.securityLevel = 'Weak';
+            }
+
+            // Generate scenarios based on assessment
+            generateScenarios();
+            
+            // Update dashboard and move to simulation
+            updateDashboard();
+            showPhase('simulation');
+            startSimulation();
+        }
+
+        function generateScenarios() {
+            // Select scenarios based on security level
+            gameState.scenarios = [...scenarioTemplates];
+            
+            // Adjust scenario difficulty based on assessment
+            if (gameState.securityLevel === 'Weak') {
+                gameState.scenarios.forEach(scenario => {
+                    scenario.decisions.forEach(decision => {
+                        decision.cost *= 1.5;
+                        decision.hours *= 1.3;
+                    });
+                });
+            }
+        }
+
+        function startSimulation() {
+            gameState.currentScenario = 0;
+            showScenario(gameState.scenarios[0]);
+        }
+
+        function showScenario(scenario) {
+            const scenarioHtml = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="alert-icon">${scenario.icon}</div>
+                        <div class="scenario-title">${scenario.title}</div>
+                    </div>
+                    <div class="scenario-description">${scenario.description}</div>
+                    <div class="decision-options">
+                        ${scenario.decisions.map((decision, index) => `
+                            <button class="decision-btn ${getDecisionClass(decision)}" 
+                                    onclick="makeDecision(${index})">
+                                ${decision.text}
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Cost: $${decision.cost.toLocaleString()} | Time: ${decision.hours} hours
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentScenario').innerHTML = scenarioHtml;
+            updateProgress();
+        }
+
+        function getDecisionClass(decision) {
+            if (decision.outcome === 'contained' || decision.outcome === 'verified') return 'safe';
+            if (decision.outcome === 'escalated' || decision.outcome === 'compromised') return 'risky';
+            return '';
+        }
+
+        function makeDecision(decisionIndex) {
+            const currentScenario = gameState.scenarios[gameState.currentScenario];
+            const decision = currentScenario.decisions[decisionIndex];
+            
+            // Apply costs
+            gameState.budget -= decision.cost;
+            gameState.hoursLost += decision.hours;
+            gameState.totalCost += decision.cost;
+            
+            // Update NIST alignment
+            if (decision.nistAlignment && decision.nistAlignment !== 'None') {
+                gameState.nistAlignment[decision.nistAlignment.toLowerCase()]++;
+            }
+            
+            // Record decision
+            gameState.decisions.push({
+                scenario: currentScenario.title,
+                decision: decision.text,
+                cost: decision.cost,
+                hours: decision.hours,
+                outcome: decision.outcome,
+                nistAlignment: decision.nistAlignment || 'None'
+            });
+            
+            // Check for follow-up scenarios
+            if (decision.followUp && followUpScenarios[decision.followUp]) {
+                gameState.followUpQueue.push(decision.followUp);
+            }
+            
+            // Show cost breakdown
+            showCostBreakdown(decision);
+            
+            // Check for badges
+            checkBadges();
+            
+            // Move to next scenario or end game
+            setTimeout(() => {
+                gameState.currentScenario++;
+                if (gameState.currentScenario < gameState.scenarios.length) {
+                    showScenario(gameState.scenarios[gameState.currentScenario]);
+                } else if (gameState.followUpQueue.length > 0) {
+                    showFollowUpScenario();
+                } else {
+                    endSimulation();
+                }
+            }, 3000);
+            
+            updateDashboard();
+        }
+
+        function showFollowUpScenario() {
+            const followUpId = gameState.followUpQueue.shift();
+            const followUpScenario = followUpScenarios[followUpId];
+            
+            const scenarioHtml = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="alert-icon">${followUpScenario.icon}</div>
+                        <div class="scenario-title">${followUpScenario.title}</div>
+                    </div>
+                    <div class="scenario-description">${followUpScenario.description}</div>
+                    <div class="decision-options">
+                        ${followUpScenario.decisions.map((decision, index) => `
+                            <button class="decision-btn ${getDecisionClass(decision)}" 
+                                    onclick="makeFollowUpDecision(${index}, '${followUpId}')">
+                                ${decision.text}
+                                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                                    Cost: ${decision.cost.toLocaleString()} | Time: ${decision.hours} hours
+                                </div>
+                                ${decision.benefit ? `<div style="font-size: 0.8em; color: #27ae60; margin-top: 3px;">📈 ${decision.benefit}</div>` : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentScenario').innerHTML = scenarioHtml;
+        }
+
+        function makeFollowUpDecision(decisionIndex, followUpId) {
+            const followUpScenario = followUpScenarios[followUpId];
+            const decision = followUpScenario.decisions[decisionIndex];
+            
+            // Apply costs
+            gameState.budget -= decision.cost;
+            gameState.hoursLost += decision.hours;
+            gameState.totalCost += decision.cost;
+            
+            // Record proactive investment
+            if (decision.benefit) {
+                gameState.proactiveInvestments.push({
+                    investment: decision.text,
+                    cost: decision.cost,
+                    benefit: decision.benefit
+                });
+            }
+            
+            // Record decision
+            gameState.decisions.push({
+                scenario: followUpScenario.title,
+                decision: decision.text,
+                cost: decision.cost,
+                hours: decision.hours,
+                outcome: decision.outcome,
+                type: 'follow-up'
+            });
+            
+            // Show cost breakdown
+            showCostBreakdown(decision);
+            updateDashboard();
+            
+            // Continue with next scenario or end
+            setTimeout(() => {
+                if (gameState.followUpQueue.length > 0) {
+                    showFollowUpScenario();
+                } else {
+                    endSimulation();
+                }
+            }, 3000);
+        }
+
+        function checkBadges() {
+            // Rapid Responder Badge
+            if (gameState.hoursLost <= 20 && !gameState.badges.includes('rapid_responder')) {
+                gameState.badges.push('rapid_responder');
+                showBadgeNotification('🚀 Rapid Responder', 'Quick decisive action under pressure');
+            }
+            
+            // Budget Protector Badge
+            if (gameState.totalCost <= 50000 && !gameState.badges.includes('budget_protector')) {
+                gameState.badges.push('budget_protector');
+                showBadgeNotification('💰 Budget Protector', 'Efficient resource management');
+            }
+            
+            // Proactive Planner Badge
+            if (gameState.proactiveInvestments.length >= 2 && !gameState.badges.includes('proactive_planner')) {
+                gameState.badges.push('proactive_planner');
+                showBadgeNotification('🛡️ Proactive Planner', 'Forward-thinking security investments');
+            }
+        }
+
+        function showBadgeNotification(title, description) {
+            const notification = document.createElement('div');
+            notification.className = 'badge-notification';
+            notification.innerHTML = `
+                <div style="background: #27ae60; color: white; padding: 15px; border-radius: 10px; margin: 10px 0; text-align: center; animation: fadeIn 0.5s;">
+                    <div style="font-size: 1.2em; font-weight: bold;">${title}</div>
+                    <div style="font-size: 0.9em; margin-top: 5px;">${description}</div>
+                </div>
+            `;
+            document.getElementById('currentScenario').appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function showCostBreakdown(decision) {
+            const breakdownHtml = `
+                <div class="cost-breakdown">
+                    <h4>Impact Summary</h4>
+                    <div class="cost-item">
+                        <span>Direct Response Cost:</span>
+                        <span>$${decision.cost.toLocaleString()}</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Instructional Time Lost:</span>
+                        <span>${decision.hours} hours</span>
+                    </div>
+                    <div class="cost-item">
+                        <span>Outcome:</span>
+                        <span>${decision.outcome.toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('currentScenario').innerHTML += breakdownHtml;
+        }
+
+        function updateProgress() {
+            const progress = ((gameState.currentScenario + 1) / gameState.scenarios.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function endSimulation() {
+            // Calculate final metrics
+            const totalImpact = gameState.totalCost + (gameState.hoursLost * costs.instructional_hour_cost);
+            
+            // Calculate NIST alignment score
+            const nistTotal = Object.values(gameState.nistAlignment).reduce((a, b) => a + b, 0);
+            const nistScore = nistTotal > 0 ? (nistTotal / gameState.decisions.length * 100) : 0;
+            
+            // Determine performance rating
+            let rating = 'Needs Improvement';
+            let badgeColor = '#e74c3c';
+            let overallScore = 0;
+            
+            // Calculate component scores
+            const financialScore = Math.max(0, 100 - (totalImpact / 2000));
+            const timeScore = Math.max(0, 100 - (gameState.hoursLost * 2));
+            const nistScoreWeighted = Math.min(100, nistScore);
+            
+            overallScore = Math.round((financialScore + timeScore + nistScoreWeighted) / 3);
+            
+            if (overallScore >= 85) {
+                rating = 'Excellent Response';
+                badgeColor = '#27ae60';
+            } else if (overallScore >= 70) {
+                rating = 'Good Response';
+                badgeColor = '#f39c12';
+            } else if (overallScore >= 55) {
+                rating = 'Adequate Response';
+                badgeColor = '#e67e22';
+            }
+            
+            // Check for final badges
+            if (overallScore >= 90 && !gameState.badges.includes('cyber_guardian')) {
+                gameState.badges.push('cyber_guardian');
+            }
+            
+            if (nistScore >= 80 && !gameState.badges.includes('nist_navigator')) {
+                gameState.badges.push('nist_navigator');
+            }
+            
+            // Generate detailed report
+            const reportData = {
+                overallScore,
+                totalImpact,
+                financialScore,
+                timeScore,
+                nistScore: nistScoreWeighted,
+                decisions: gameState.decisions,
+                badges: gameState.badges,
+                proactiveInvestments: gameState.proactiveInvestments,
+                recommendations: generateRecommendations()
+            };
+            
+            // Update results display
+            document.getElementById('finalCost').textContent = `${totalImpact.toLocaleString()}`;
+            document.getElementById('finalHours').textContent = `${gameState.hoursLost} hours`;
+            
+            // Create comprehensive results display
+            const detailedResults = `
+                <div class="badge" style="background: ${badgeColor}; font-size: 1.2em; padding: 15px 30px; margin: 20px 0;">
+                    ${rating} (${overallScore}/100)
+                </div>
+                
+                <div class="results-breakdown" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3>Performance Breakdown</h3>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 15px 0;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: bold; color: #3498db;">${Math.round(financialScore)}/100</div>
+                            <div style="font-size: 0.9em;">Financial Management</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: bold; color: #3498db;">${Math.round(timeScore)}/100</div>
+                            <div style="font-size: 0.9em;">Response Time</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5em; font-weight: bold; color: #3498db;">${Math.round(nistScoreWeighted)}/100</div>
+                            <div style="font-size: 0.9em;">NIST Alignment</div>
+                        </div>
+                    </div>
+                </div>
+                
+                ${gameState.badges.length > 0 ? `
+                    <div class="badges-earned" style="margin: 20px 0;">
+                        <h3>Badges Earned</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0;">
+                            ${gameState.badges.map(badge => getBadgeDisplay(badge)).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="recommendations" style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                    <h3>Key Recommendations</h3>
+                    <ul style="text-align: left; margin: 10px 0;">
+                        ${reportData.recommendations.map(rec => `<li style="margin: 5px 0;">${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('performanceRating').innerHTML = detailedResults;
+            
+            // Show results phase
+            document.querySelectorAll('.phase-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.phase-btn:last-child').classList.add('active');
+            document.querySelectorAll('#assessmentPhase, #simulationPhase').forEach(el => el.classList.add('hidden'));
+            document.getElementById('resultsPhase').classList.remove('hidden');
+        }
+
+        function getBadgeDisplay(badgeId) {
+            const badges = {
+                'rapid_responder': { icon: '🚀', name: 'Rapid Responder', color: '#3498db' },
+                'budget_protector': { icon: '💰', name: 'Budget Protector', color: '#27ae60' },
+                'proactive_planner': { icon: '🛡️', name: 'Proactive Planner', color: '#9b59b6' },
+                'cyber_guardian': { icon: '🛡️', name: 'Cyber Guardian', color: '#e74c3c' },
+                'nist_navigator': { icon: '🧭', name: 'NIST Navigator', color: '#f39c12' }
+            };
+            
+            const badge = badges[badgeId];
+            return `
+                <div style="background: ${badge.color}; color: white; padding: 8px 12px; border-radius: 20px; font-size: 0.9em;">
+                    ${badge.icon} ${badge.name}
+                </div>
+            `;
+        }
+
+        function generateRecommendations() {
+            const recommendations = [];
+            
+            // Budget-based recommendations
+            if (gameState.totalCost > 100000) {
+                recommendations.push('Consider investing in proactive security measures to reduce incident response costs');
+            }
+            
+            // Time-based recommendations
+            if (gameState.hoursLost > 40) {
+                recommendations.push('Develop and test incident response procedures to minimize downtime');
+            }
+            
+            // NIST alignment recommendations
+            const nistCounts = gameState.nistAlignment;
+            if (nistCounts.protect < 2) {
+                recommendations.push('Strengthen preventative security controls (NIST Protect function)');
+            }
+            if (nistCounts.detect < 1) {
+                recommendations.push('Implement better threat detection capabilities (NIST Detect function)');
+            }
+            if (nistCounts.respond < 2) {
+                recommendations.push('Improve incident response procedures and training (NIST Respond function)');
+            }
+            
+            // Assessment-based recommendations
+            if (gameState.assessment.mfa < 2) {
+                recommendations.push('Implement multi-factor authentication for all users');
+            }
+            if (gameState.assessment.backup < 2) {
+                recommendations.push('Establish air-gapped backup systems for critical data');
+            }
+            if (gameState.assessment.training < 2) {
+                recommendations.push('Conduct regular security awareness training with phishing simulations');
+            }
+            
+            // Proactive investment recommendations
+            if (gameState.proactiveInvestments.length < 2) {
+                recommendations.push('Consider preventative security investments to reduce future incident costs');
+            }
+            
+            return recommendations.slice(0, 5); // Limit to top 5 recommendations
+        }
+
+        function restartGame() {
+            gameState = {
+                budget: 150000,
+                hoursLost: 0,
+                securityLevel: 'Baseline',
+                assessment: {
+                    mfa: null,
+                    backup: null,
+                    edr: null,
+                    training: null,
+                    incident: null
+                },
+                currentScenario: 0,
+                scenarios: [],
+                totalCost: 0,
+                decisions: []
+            };
+            
+            // Reset form
+            document.querySelectorAll('input[type="radio"]').forEach(input => input.checked = false);
+            
+            updateDashboard();
+            showPhase('assessment');
+        }
+
+        // Initialize game on load
+        window.onload = initializeGame;
+    </script>
+</body>
+</html>
