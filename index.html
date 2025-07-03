@@ -17,7 +17,7 @@
             <div class="dashboard">
                 <div class="stat-card">
                     <h3>Available Budget</h3>
-                    <div class="stat-value" id="budget">$150,000</div>
+                    <div class="stat-value" id="budget">Select District</div>
                 </div>
                 <div class="stat-card">
                     <h3>School Days Lost</h3>
@@ -30,6 +30,21 @@
                 <div class="stat-card">
                     <h3>Security Level</h3>
                     <div class="stat-value" id="securityLevel">Baseline</div>
+                </div>
+            </div>
+
+            <div class="reputation-section">
+                <div class="reputation-header">
+                    <h3>District Reputation</h3>
+                    <div class="reputation-value" id="reputationValue">Excellent</div>
+                </div>
+                <div class="reputation-bar">
+                    <div class="reputation-fill" id="reputationFill"></div>
+                </div>
+                <div class="reputation-indicators">
+                    <div class="reputation-icon" id="communityIcon">👥</div>
+                    <div class="reputation-icon" id="boardIcon">🏛️</div>
+                    <div class="reputation-icon" id="mediaIcon">📰</div>
                 </div>
             </div>
 
@@ -50,109 +65,129 @@
                         <div class="option-group">
                             <label class="option">
                                 <input type="radio" name="districtSize" value="small">
-                                <span>Small District (1-500 students)</span>
+                                <span>Small District (1-500 students) - Budget: $20,000</span>
                             </label>
                             <label class="option">
                                 <input type="radio" name="districtSize" value="medium">
-                                <span>Medium District (500-1,500 students)</span>
+                                <span>Medium District (500-1,500 students) - Budget: $45,000</span>
                             </label>
                             <label class="option">
                                 <input type="radio" name="districtSize" value="large">
-                                <span>Large District (1,500-5,000 students)</span>
+                                <span>Large District (1,500-5,000 students) - Budget: $80,000</span>
                             </label>
                             <label class="option">
                                 <input type="radio" name="districtSize" value="xlarge">
-                                <span>Extra Large District (5,000+ students)</span>
+                                <span>Extra Large District (5,000+ students) - Budget: $120,000</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="question-card">
-                        <h3>1. Multi-Factor Authentication (MFA)</h3>
+                        <h3>1. Multi-Factor Authentication (MFA) - Select all that apply</h3>
                         <div class="option-group">
                             <label class="option">
-                                <input type="radio" name="mfa" value="0">
-                                <span>No MFA implementation</span>
+                                <input type="checkbox" name="mfa" value="admin_mfa">
+                                <span>MFA implemented for administrators</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="mfa" value="1">
-                                <span>MFA for administrators only</span>
+                                <input type="checkbox" name="mfa" value="staff_mfa">
+                                <span>MFA implemented for all staff</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="mfa" value="2">
-                                <span>MFA for all staff and students</span>
+                                <input type="checkbox" name="mfa" value="student_mfa">
+                                <span>MFA implemented for students</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="mfa" value="hardware_tokens">
+                                <span>Hardware security tokens available</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="question-card">
-                        <h3>2. Data Backup Strategy</h3>
+                        <h3>2. Data Backup Strategy - Select all that apply</h3>
                         <div class="option-group">
                             <label class="option">
-                                <input type="radio" name="backup" value="0">
-                                <span>No regular backups</span>
+                                <input type="checkbox" name="backup" value="regular_backups">
+                                <span>Regular automated backups scheduled</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="backup" value="1">
-                                <span>Regular backups but connected to network</span>
+                                <input type="checkbox" name="backup" value="offsite_backups">
+                                <span>Backups stored offsite or in cloud</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="backup" value="2">
-                                <span>Air-gapped backups tested regularly</span>
+                                <input type="checkbox" name="backup" value="air_gapped">
+                                <span>Air-gapped backup systems</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="backup" value="tested_recovery">
+                                <span>Regular backup recovery testing</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="question-card">
-                        <h3>3. Endpoint Detection and Response (EDR)</h3>
+                        <h3>3. Endpoint Security - Select all that apply</h3>
                         <div class="option-group">
                             <label class="option">
-                                <input type="radio" name="edr" value="0">
-                                <span>Basic antivirus only</span>
+                                <input type="checkbox" name="edr" value="basic_antivirus">
+                                <span>Basic antivirus on all devices</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="edr" value="1">
-                                <span>Advanced antivirus with some monitoring</span>
+                                <input type="checkbox" name="edr" value="advanced_antivirus">
+                                <span>Advanced antivirus with behavioral analysis</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="edr" value="2">
-                                <span>Full EDR solution with 24/7 monitoring</span>
+                                <input type="checkbox" name="edr" value="edr_solution">
+                                <span>Full EDR (Endpoint Detection & Response) solution</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="edr" value="monitoring_24_7">
+                                <span>24/7 security monitoring service</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="question-card">
-                        <h3>4. Staff Security Training</h3>
+                        <h3>4. Staff Security Training - Select all that apply</h3>
                         <div class="option-group">
                             <label class="option">
-                                <input type="radio" name="training" value="0">
-                                <span>No formal security training</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="training" value="1">
+                                <input type="checkbox" name="training" value="annual_training">
                                 <span>Annual security awareness training</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="training" value="2">
-                                <span>Regular training with simulated phishing tests</span>
+                                <input type="checkbox" name="training" value="phishing_simulations">
+                                <span>Regular phishing simulation exercises</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="training" value="incident_drills">
+                                <span>Incident response drills and tabletop exercises</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="training" value="role_specific">
+                                <span>Role-specific security training (IT, admin, teachers)</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="question-card">
-                        <h3>5. Incident Response Plan</h3>
+                        <h3>5. Incident Response Preparedness - Select all that apply</h3>
                         <div class="option-group">
                             <label class="option">
-                                <input type="radio" name="incident" value="0">
-                                <span>No formal incident response plan</span>
+                                <input type="checkbox" name="incident" value="written_plan">
+                                <span>Written incident response plan exists</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="incident" value="1">
-                                <span>Written plan but not tested</span>
+                                <input type="checkbox" name="incident" value="tested_plan">
+                                <span>Incident response plan has been tested</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="incident" value="2">
-                                <span>Tested plan with defined roles and procedures</span>
+                                <input type="checkbox" name="incident" value="defined_roles">
+                                <span>Clear roles and responsibilities defined</span>
+                            </label>
+                            <label class="option">
+                                <input type="checkbox" name="incident" value="external_contacts">
+                                <span>Pre-established contacts with cybersecurity experts</span>
                             </label>
                         </div>
                     </div>
