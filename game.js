@@ -2,18 +2,21 @@
 const Game = {
     // Game state object
     state: {
-        budget: 150000,
+        budget: null, // Will be set when district size is selected
         schoolDaysLost: 0,
         techTimeSpent: 0,
         securityLevel: 'Baseline',
         districtSize: null,
-        districtMultiplier: { budget: 1, cost: 1, impact: 1 },
+        districtMultiplier: null,
+        reputation: 100, // Start with perfect reputation
+        reputationLevel: 'Excellent',
+        reputationEvents: [],
         assessment: {
-            mfa: null,
-            backup: null,
-            edr: null,
-            training: null,
-            incident: null
+            mfa: [],
+            backup: [],
+            edr: [],
+            training: [],
+            incident: []
         },
         currentScenario: 0,
         scenarios: [],
@@ -30,7 +33,9 @@ const Game = {
         proactiveInvestments: [],
         followUpQueue: [],
         allIncidentsContained: false,
-        availableInvestments: []
+        availableInvestments: [],
+        storyMode: true,
+        waitingForNext: false
     },
 
     /**
@@ -48,18 +53,18 @@ const Game = {
      */
     resetState() {
         this.state = {
-            budget: 150000,
+            budget: null, // Will be set when district size is selected
             schoolDaysLost: 0,
             techTimeSpent: 0,
             securityLevel: 'Baseline',
             districtSize: null,
-            districtMultiplier: { budget: 1, cost: 1, impact: 1 },
+            districtMultiplier: null,
             assessment: {
-                mfa: null,
-                backup: null,
-                edr: null,
-                training: null,
-                incident: null
+                mfa: [],
+                backup: [],
+                edr: [],
+                training: [],
+                incident: []
             },
             currentScenario: 0,
             scenarios: [],
@@ -87,20 +92,19 @@ const Game = {
         this.state.districtSize = size;
         this.state.districtMultiplier = SCENARIOS.costs.sizeMultipliers[size];
         
-        // Update budget based on district size
-        const baseBudget = 150000;
-        this.state.budget = Math.round(baseBudget * this.state.districtMultiplier.budget);
+        // Set budget based on district size (now using absolute values)
+        this.state.budget = this.state.districtMultiplier.budget;
         
         UI.updateDashboard(this.state);
-        console.log(`District size updated to: ${size}`);
+        console.log(`District size updated to: ${size}, Budget: ${this.state.budget.toLocaleString()}`);
     },
 
     /**
-     * Update assessment response
+     * Update assessment response (now handles arrays of selections)
      */
-    updateAssessment(category, value) {
-        this.state.assessment[category] = value;
-        console.log(`Assessment updated: ${category} = ${value}`);
+    updateAssessment(category, selectedValues) {
+        this.state.assessment[category] = selectedValues;
+        console.log(`Assessment updated: ${category} = [${selectedValues.join(', ')}]`);
     },
 
     /**
@@ -113,10 +117,21 @@ const Game = {
             return;
         }
 
-        // Validate that all assessment questions are answered
-        const assessmentValues = Object.values(this.state.assessment);
-        if (assessmentValues.includes(null)) {
-            UI.showError('Please answer all assessment questions before continuing.');
+        // Validate that at least one option is selected for each assessment category
+        const categories = Object.keys(this.state.assessment);
+        const emptyCategories = categories.filter(cat => this.state.assessment[cat].length === 0);
+        
+        if (emptyCategories.length > 0) {
+            const categoryNames = {
+                mfa: 'Multi-Factor Authentication',
+                backup: 'Data Backup Strategy', 
+                edr: 'Endpoint Security',
+                training: 'Staff Security Training',
+                incident: 'Incident Response Preparedness'
+            };
+            
+            const missingNames = emptyCategories.map(cat => categoryNames[cat]).join(', ');
+            UI.showError(`Please select at least one option for: ${missingNames}`);
             return;
         }
 
@@ -140,18 +155,30 @@ const Game = {
      * Calculate security level based on assessment responses
      */
     calculateSecurityLevel() {
-        const scores = Object.values(this.state.assessment).filter(val => val !== null);
-        const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+        // Calculate average security implementation across all categories
+        const categories = Object.keys(this.state.assessment);
+        const maxPossiblePerCategory = 4; // Each category has 4 options
         
-        if (avgScore >= 1.5) {
+        let totalSelected = 0;
+        let totalPossible = 0;
+        
+        categories.forEach(category => {
+            totalSelected += this.state.assessment[category].length;
+            totalPossible += maxPossiblePerCategory;
+        });
+        
+        const implementationRatio = totalSelected / totalPossible;
+        
+        // Determine security level based on implementation ratio
+        if (implementationRatio >= 0.75) {
             this.state.securityLevel = 'Strong';
-        } else if (avgScore >= 1) {
-            this.state.securityLevel = 'Moderate';
+        } else if (implementationRatio >= 0.45) {
+            this.state.securityLevel = 'Moderate';  
         } else {
             this.state.securityLevel = 'Weak';
         }
         
-        console.log(`Security level calculated: ${this.state.securityLevel} (avg: ${avgScore.toFixed(2)})`);
+        console.log(`Security level calculated: ${this.state.securityLevel} (${(implementationRatio * 100).toFixed(1)}% implementation)`);
     },
 
     /**
@@ -290,8 +317,9 @@ const Game = {
             // Show follow-up scenarios
             this.showNextFollowUp();
         } else {
-            // Check if investment phase should be shown
-            if (this.state.allIncidentsContained && this.state.budget > 20000) {
+            // Check if investment phase should be shown (minimum 25% of budget remaining)
+            const minInvestmentBudget = Math.round(this.state.districtMultiplier.budget * 0.25);
+            if (this.state.allIncidentsContained && this.state.budget > minInvestmentBudget) {
                 this.startInvestmentPhase();
             } else {
                 this.endSimulation();
@@ -550,14 +578,20 @@ const Game = {
         }
         
         // Assessment-based recommendations
-        if (this.state.assessment.mfa < 2) {
-            recommendations.push('Implement multi-factor authentication for all users');
+        if (!this.state.assessment.mfa.includes('admin_mfa') && !this.state.assessment.mfa.includes('staff_mfa')) {
+            recommendations.push('Implement multi-factor authentication for administrators and staff');
         }
-        if (this.state.assessment.backup < 2) {
-            recommendations.push('Establish air-gapped backup systems for critical data');
+        if (!this.state.assessment.backup.includes('air_gapped') && !this.state.assessment.backup.includes('tested_recovery')) {
+            recommendations.push('Establish air-gapped backup systems with regular recovery testing');
         }
-        if (this.state.assessment.training < 2) {
+        if (!this.state.assessment.training.includes('phishing_simulations') && !this.state.assessment.training.includes('annual_training')) {
             recommendations.push('Conduct regular security awareness training with phishing simulations');
+        }
+        if (!this.state.assessment.incident.includes('tested_plan') && !this.state.assessment.incident.includes('written_plan')) {
+            recommendations.push('Develop and test a comprehensive incident response plan');
+        }
+        if (!this.state.assessment.edr.includes('edr_solution') && !this.state.assessment.edr.includes('monitoring_24_7')) {
+            recommendations.push('Implement advanced endpoint detection and response capabilities');
         }
         
         // Proactive investment recommendations
